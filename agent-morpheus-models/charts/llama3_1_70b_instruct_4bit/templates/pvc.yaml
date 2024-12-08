@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: llm-cache
+  labels:
+    app: llama3.1-70b-instruct
+    inference: vllm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: {{ .Values.storageClass.name | default "gp3-csi" }}

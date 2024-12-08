@@ -1,0 +1,14 @@
+{{- if .Values.openshift.createSecurityContextConstraint -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "llama3_1_70b_instruct_4bit.fullname" . }}-anyuid-scc
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.global.serviceAccountName }}
+roleRef:
+  kind: Role
+  name: {{ include "llama3_1_70b_instruct_4bit.fullname" . }}-anyuid-scc
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end }}

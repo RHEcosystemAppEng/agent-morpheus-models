@@ -1,0 +1,52 @@
+# Default values for agent-morpheus-models.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  ngcAPIKey: &ngc-api-key changeme
+  serviceAccountName: &sa-name agent-morpheus-models
+  tolerationsKey: &toleration-key p4-gpu
+  tolerationOperator: &toleration-op Exists
+  tolerationEffect: &toleration-effect NoSchedule
+
+nim-embed:
+  tolerations:
+    - key: *toleration-key
+      operator: *toleration-op
+      effect: *toleration-effect
+  ngcSecret:
+    apiKey: *ngc-api-key
+  serviceAccount:
+    name: *sa-name
+  fullnameOverride: nim-embed
+
+
+nim-llm:
+  serviceAccount:
+    name: *sa-name
+  model:
+    ngcAPIKey: *ngc-api-key
+  tolerations:
+    - key: *toleration-key
+      operator: *toleration-op
+      effect: *toleration-effect
+
+nim_llm:
+  enabled: false
+
+nim_embed:
+  enabled: true
+
+llama3_1_70b_instruct_4bit:
+  enabled: true
+  tolerations:
+    - key: *toleration-key
+      operator: *toleration-op
+      effect: *toleration-effect
+  serviceAccount:
+    name: *sa-name
+    create: true
+  fullnameOverride: llama3-1-70b-instruct-4bit
+
+
+

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "agent-morpheus-models.name" . }}
+data:
+{{ include "agent-morpheus-models.logic_check" . }}
+

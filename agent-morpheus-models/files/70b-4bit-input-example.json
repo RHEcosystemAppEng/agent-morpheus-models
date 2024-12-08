@@ -1,0 +1,7 @@
+{ "model": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+  "messages": [{"role": "user", "content": "What is Openshift?"}],
+  "temperature": 0,
+  "top_p": 0.01,
+  "max_tokens": 1024,
+  "stream": false
+}

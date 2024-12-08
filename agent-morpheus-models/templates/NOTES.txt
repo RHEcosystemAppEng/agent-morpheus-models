@@ -1,0 +1,10 @@
+{{- if .Values.llama3_1_70b_instruct_4bit.enabled }}
+{{ $svc_name := .Values.llama3_1_70b_instruct_4bit.fullnameOverride }}
+{{/*{{ printf "svc_name -> %s" $svc_name}}*/}}
+1. Send a prompt to the model to test it works.:
+{{- $routes := lookup "route.openshift.io/v1" "Route" .Release.Namespace "" }}
+{{/*{{- printf "route var => %s" $routes.items }}*/}}
+{{ $route := first $routes.items }}
+{{- $url := dig "spec" "host" "host"  $route }}
+ curl -X POST -H "Content-Type: application/json" http://{{ $url }}/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json
+{{- end }}
