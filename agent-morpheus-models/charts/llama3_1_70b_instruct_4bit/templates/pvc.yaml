@@ -5,6 +5,9 @@ metadata:
   labels:
     app: llama3.1-70b-instruct
     inference: vllm
+  annotations:
+    "helm.sh/resource-policy": keep
+
 spec:
   accessModes:
     - ReadWriteOnce

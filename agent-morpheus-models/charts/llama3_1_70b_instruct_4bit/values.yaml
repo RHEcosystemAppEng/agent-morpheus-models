@@ -76,9 +76,21 @@ resources:
     memory: 25Gi
     nvidia.com/gpu: "2"
 
-livenessProbe: {}
+livenessProbe:
+  initialDelaySeconds: 120
+  failureThreshold: 26
+  periodSeconds: 20
+  httpGet:
+    port: 8000
+    path: /health
 
-readinessProbe: {}
+readinessProbe:
+  initialDelaySeconds: 120
+  failureThreshold: 26
+  periodSeconds: 20
+  httpGet:
+    port: 8000
+    path: /health
 
 autoscaling:
   enabled: false

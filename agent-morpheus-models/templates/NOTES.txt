@@ -1,10 +1,9 @@
-{{- if .Values.llama3_1_70b_instruct_4bit.enabled }}
-{{ $svc_name := .Values.llama3_1_70b_instruct_4bit.fullnameOverride }}
-{{/*{{ printf "svc_name -> %s" $svc_name}}*/}}
-1. Send a prompt to the model to test it works.:
-{{- $routes := lookup "route.openshift.io/v1" "Route" .Release.Namespace "" }}
-{{/*{{- printf "route var => %s" $routes.items }}*/}}
-{{ $route := first $routes.items }}
-{{- $url := dig "spec" "host" "host"  $route }}
- curl -X POST -H "Content-Type: application/json" http://{{ $url }}/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json
+{{- if and .Values.llama3_1_70b_instruct_4bit.enabled .Values.llama3_1_70b_instruct_4bit.openshift.createRoute }}
+Send a prompt to the model to test it works:
+{{- $svc_name := .Values.llama3_1_70b_instruct_4bit.fullnameOverride }}
+{{- $clusterIngress := (lookup "config.openshift.io/v1" "Ingress" "" "cluster") }}
+{{- $domain := dig "spec" "domain" "" $clusterIngress   }}
+{{- $url := printf "%s-%s.%s" $svc_name .Release.Namespace $domain }}
+oc wait --for=condition=ready pod -l component=llama3.1-70b-instruct  --timeout 1000s
+curl -X POST -H "Content-Type: application/json" http://{{ $url }}/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
 {{- end }}
