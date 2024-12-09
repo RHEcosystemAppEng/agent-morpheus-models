@@ -21,7 +21,16 @@ export NGC_API_KEY=your_api_key_goes_here
 sed -E 's/ \&ngc-api-key changeme/ \&ngc-api-key '$NGC_API_KEY'/' gent-morpheus-models/:values.yaml  > agent-morpheus-models/yourenv_values.yaml
 ```
 
-4. Deploy the chart with one of the two possible combinations:
+4. Deploying both LLMs together is not possible, when trying doing so, you'll get an error from  the chart installation:
+```shell
+helm install --set llama3_1_70b_instruct_4bit.enabled=true --set nim_llm.enabled=true  agent-morpheus-models agent-morpheus-models/ -f agent-morpheus-models/yourenv_values.yaml
+```
+Output:
+```shell
+Error: INSTALLATION FAILED: execution error at (agent-morpheus-models/templates/configmap.yaml:6:3): Only one of models should be deployed!, either llama3_1_70b_instruct_4bit or nim_llm 8b, but not both!
+```
+
+5. Deploy the chart with one of the two possible combinations:
 ```shell
 # Deploy with LLM llama3.1-70b-instruct-4bit
  helm install agent-morpheus-models agent-morpheus-models/ -f agent-morpheus-models/yourenv_values.yaml
@@ -42,13 +51,13 @@ oc wait --for=condition=ready pod -l component=llama3.1-70b-instruct  --timeout 
 curl -X POST -H "Content-Type: application/json" http://llama3-1-70b-instruct-4bit-test-models.apps.ai-dev03.kni.syseng.devcluster.openshift.com/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
 ```
 
-5. Wait for LLM pod to be ready, and then send an example request to the LLM, in order to get output
+6. Wait for LLM pod to be ready, and then send an example request to the LLM, in order to get output
 ```shell
 oc wait --for=condition=ready pod -l component=llama3.1-70b-instruct  --timeout 1000s
 curl -X POST -H "Content-Type: application/json" http://llama3-1-70b-instruct-4bit-test-models.apps.ai-dev03.kni.syseng.devcluster.openshift.com/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
 ```
 
-6. Whenever finishing with models , and wants to free up resources,  you can delete the chart
+7. Whenever finishing with models , and wants to free up resources,  you can delete the chart
 ```shell
 helm uninstall agent-morpheus-models
 ```
