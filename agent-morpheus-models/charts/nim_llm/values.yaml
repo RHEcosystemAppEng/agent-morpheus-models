@@ -22,6 +22,8 @@ containerSecurityContext: {}
 ## For advanced use if necessary only
 customCommand: []
 
+fullnameOverride: nim-llm
+
 ## @param customArgs [array] Overrides command line arguments of the NIM container with the array listed here. 
 ## For advanced use if necessary only
 customArgs: []
@@ -49,10 +51,10 @@ extraVolumeMounts: {}
 ## @param image.tag [string] Image tag or version
 ## @param image.pullPolicy [string] Image pull policy
 image:
-  repository: nvcr.io/nim/meta/llama3-8b-instruct
+  repository: nvcr.io/nim/meta/llama-3.1-8b-instruct
   pullPolicy: IfNotPresent
   # Tag overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
 
 ## @extra imagePullSecrets Specify list of secret names that are needed for the main container and any init containers.
 ## @skip imagePullSecrets[0].name

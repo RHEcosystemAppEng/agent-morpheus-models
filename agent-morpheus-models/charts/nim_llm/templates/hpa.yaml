@@ -5,7 +5,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Release.Name }}
   labels:
-    {{- include "nim-llm.labels" . | nindent 4 }}
+    {{- include "nim_llm.labels" . | nindent 4 }}
 spec:
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}

@@ -15,7 +15,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 openshift:
-  createSecurityContextConstraint: true
   createRoute: true
 
 storageClass:

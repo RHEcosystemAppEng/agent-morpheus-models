@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "nim-llm.fullname" . }}-test-streaming-chat"
+  name: "{{ include "nim_llm.fullname" . }}-test-streaming-chat"
   labels:
-    {{- include "nim-llm.labels" . | nindent 4 }}
+    {{- include "nim_llm.labels" . | nindent 4 }}
     sidecar.istio.io/inject: "false"
   annotations:
     "helm.sh/hook": test
@@ -16,7 +16,7 @@ spec:
       args:
         - -X
         - "POST"
-        - 'http://{{ .Values.service.name | default (include "nim-llm.fullname" .) }}:{{ .Values.service.openai_port | default .Values.service.openaiPort }}/v1/chat/completions'
+        - 'http://{{ .Values.service.name | default (include "nim_llm.fullname" .) }}:{{ .Values.service.openai_port | default .Values.service.openaiPort }}/v1/chat/completions'
         - -H
         - 'accept: application/json'
         - -H

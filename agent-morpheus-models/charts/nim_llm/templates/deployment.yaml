@@ -8,25 +8,19 @@ kind: StatefulSet
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "nim_llm.fullname" . }}
   labels:
-    {{- include "nim-llm.labels" . | nindent 4 }}
+    {{- include "nim_llm.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "nim-llm.selectorLabels" . | nindent 6 }}
+      {{- include "nim_llm.selectorLabels" . | nindent 6 }}
       {{- if .Values.model.labels }}
       {{- toYaml .Values.model.labels | nindent 6 }}
       {{- end }}
-  {{- if .Values.statefulSet.enabled }}
-  serviceName: {{ .Values.service.name | default (include "nim-llm.fullname" .) }}-sts
-  podManagementPolicy: "Parallel"
-  {{ else }}
-  progressDeadlineSeconds: 3600
-  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -34,7 +28,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "nim-llm.selectorLabels" . | nindent 8 }}
+        {{- include "nim_llm.selectorLabels" . | nindent 8 }}
         {{- if .Values.model.labels }}
         {{- toYaml .Values.model.labels | nindent 8 }}
         {{- end }}
@@ -43,7 +37,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "nim-llm.serviceAccountName" . }}
+      serviceAccountName: {{ include "nim_llm.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
@@ -94,7 +88,7 @@ spec:
         - {{ . | toYaml | nindent 10 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name | replace "_" "-" }}
           securityContext:
             {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -187,12 +181,12 @@ spec:
             {{- toYaml .Values.env | nindent 12 }}
             {{- end }}
           ports:
-            {{- include "nim-llm.ports" . | nindent 12 }}
-          {{- include "nim-llm.probes" . | indent 10 }}
+            {{- include "nim_llm.ports" . | nindent 12 }}
+          {{- include "nim_llm.probes" . | indent 10 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            {{- include "nim-llm.volumeMounts" . | nindent 12 }}
+            {{- include "nim_llm.volumeMounts" . | nindent 12 }}
       terminationGracePeriodSeconds: 60
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -218,7 +212,7 @@ spec:
         - name: model-store
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName:  {{ .Values.persistence.existingClaim | default (include "nim-llm.fullname" .) }}
+            claimName:  {{ .Values.persistence.existingClaim | default (include "nim_llm.fullname" .) }}
           {{- else if .Values.hostPath.enabled }}
           hostPath:
             path: {{ .Values.hostPath.path }}
@@ -248,7 +242,7 @@ spec:
   - metadata:
       name: model-store
       labels:
-        {{- include "nim-llm.labels" . | nindent 8 }}
+        {{- include "nim_llm.labels" . | nindent 8 }}
       {{- with .Values.persistence.annotations  }}
       annotations:
         {{ toYaml . | indent 4 }}

@@ -1,9 +1,15 @@
 {{- if and .Values.llama3_1_70b_instruct_4bit.enabled .Values.llama3_1_70b_instruct_4bit.openshift.createRoute }}
-Send a prompt to the model to test it works:
+Send a prompt to LLM llama3.1-70b-instruct-4bit to verify if it works as expected:
 {{- $svc_name := .Values.llama3_1_70b_instruct_4bit.fullnameOverride }}
 {{- $clusterIngress := (lookup "config.openshift.io/v1" "Ingress" "" "cluster") }}
 {{- $domain := dig "spec" "domain" "" $clusterIngress   }}
 {{- $url := printf "%s-%s.%s" $svc_name .Release.Namespace $domain }}
+
 oc wait --for=condition=ready pod -l component=llama3.1-70b-instruct  --timeout 1000s
 curl -X POST -H "Content-Type: application/json" http://{{ $url }}/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
+{{- else }}
+Perform the following actions to verify that nim-llm meta/llama-3.1-8b works as expected:
+1. oc wait --for=condition=ready pod -l component=nim-llm --timeout 220s
+2. oc port-forward svc/{{ .Values.nim_llm.fullnameOverride }} {{ .Values.nim_llm.service.openaiPort }}:{{ .Values.nim_llm.service.openaiPort }}
+3. curl -X POST -H "Content-Type: application/json" http://localhost:8000/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/8b-16bit-input-example.json | jq .
 {{- end }}

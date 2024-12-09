@@ -8,7 +8,7 @@ kind: LeaderWorkerSet
 metadata:
   name: {{ .Release.Name }}
   labels:
-    {{- include "nim-llm.labels" $ | nindent 4 }}
+    {{- include "nim_llm.labels" $ | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   leaderWorkerTemplate:
@@ -17,7 +17,7 @@ spec:
     leaderTemplate:
       metadata:
         labels:
-          {{- include "nim-llm.labels" $ | nindent 10 }}
+          {{- include "nim_llm.labels" $ | nindent 10 }}
           nim-llm-role: "leader"
         annotations:
           {{- toYaml .Values.podAnnotations | nindent 10 }}
@@ -42,12 +42,12 @@ spec:
               - name: VLLM_CONFIGURE_LOGGING
                 value: "1"
               - name: TLLM_LOG_LEVEL
-                value: {{ include "nim-llm.trtLLMLoggingLevel" . }}
+                value: {{ include "nim_llm.trtLLMLoggingLevel" . }}
               - name: VLLM_NVEXT_LOG_LEVEL
-                value: {{ include "nim-llm.vllmNVEXTLogLevel" . }}
+                value: {{ include "nim_llm.vllmNVEXTLogLevel" . }}
               - name: UVICORN_LOG_LEVEL
-                value: {{ include "nim-llm.uvicornLogLevel" . }}
-              {{- include "nim-llm.JSONLLoggingEnvVars" . | indent 14 }}
+                value: {{ include "nim_llm.uvicornLogLevel" . }}
+              {{- include "nim_llm.JSONLLoggingEnvVars" . | indent 14 }}
               - name: NIM_CACHE_PATH
                 value: {{ .Values.model.nimCache | quote }}
               - name: NGC_HOME
@@ -90,10 +90,10 @@ spec:
               - |-
                 ssh-keygen -f \
                 {{ ternary "/root/pk/private.key" "/opt/nim/llm/pk/private.key" (eq (int $.Values.podSecurityContext.runAsUser) 0) }} \
-                -y > {{ include "nim-llm.sshDir" . }}/rsa.pub \
-                && cp {{ include "nim-llm.sshDir" . }}/rsa.pub {{ include "nim-llm.sshDir" . }}/authorized_keys \
+                -y > {{ include "nim_llm.sshDir" . }}/rsa.pub \
+                && cp {{ include "nim_llm.sshDir" . }}/rsa.pub {{ include "nim_llm.sshDir" . }}/authorized_keys \
                 && echo -e "Host *\n    IdentityFile {{ ternary "/root/pk/private.key" "/opt/nim/llm/pk/private.key" (eq (int $.Values.podSecurityContext.runAsUser) 0) }}" \
-                > {{ include "nim-llm.sshDir" . }}/config;
+                > {{ include "nim_llm.sshDir" . }}/config;
                 ticker=0;
                 grep -v '^localhost' "/etc/mpi/hostfile-${GROUP_INDEX}" | awk '{print $1}' | while read -r worker;
                 do
@@ -151,20 +151,20 @@ spec:
                 -x \
                 {{ get . "name" }} \
                 {{- end }}
-                {{ include "nim-llm.multiNodeExec" . }}
+                {{ include "nim_llm.multiNodeExec" . }}
             ports:
-              {{- include "nim-llm.ports" . | nindent 14 }}
+              {{- include "nim_llm.ports" . | nindent 14 }}
             resources:
               {{- toYaml .Values.resources | nindent 14 }}
             volumeMounts:
-              {{- include "nim-llm.volumeMounts" $ | nindent 14 }}
+              {{- include "nim_llm.volumeMounts" $ | nindent 14 }}
               - name: ssh-pk
                 mountPath: {{ ternary "/root/pk" "/opt/nim/llm/pk" (eq (int .Values.podSecurityContext.runAsUser) 0) }}
               - name: ssh-dotfiles
-                mountPath: {{ include "nim-llm.sshDir" . }}
+                mountPath: {{ include "nim_llm.sshDir" . }}
               - name: mpi-config
                 mountPath: /etc/mpi
-            {{- include "nim-llm.probes" $ | indent 12 }}
+            {{- include "nim_llm.probes" $ | indent 12 }}
         {{- with .Values.nodeSelector }}
         nodeSelector:
           {{- toYaml . | nindent 10 }}
@@ -182,7 +182,7 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
         volumes:
-          {{- include "nim-llm.multinodeVolumes" . | nindent 10 }}
+          {{- include "nim_llm.multinodeVolumes" . | nindent 10 }}
           - name: mpi-config
             configMap:
               name: {{ .Release.Name }}-lws-mpi-config
@@ -192,7 +192,7 @@ spec:
           - name: ssh-pk
             secret:
               defaultMode: 256
-              secretName: {{ include "nim-llm.fullname" . }}-ssh-pk
+              secretName: {{ include "nim_llm.fullname" . }}-ssh-pk
     workerTemplate:
       metadata:
         annotations:
@@ -215,8 +215,8 @@ spec:
               - |-
                 ssh-keygen -f \
                 {{ ternary "/root/pk/private.key" "/opt/nim/llm/pk/private.key" (eq (int $.Values.podSecurityContext.runAsUser) 0) }} \
-                -y > {{ include "nim-llm.sshDir" . }}/rsa.pub \
-                && cp {{ include "nim-llm.sshDir" . }}/rsa.pub {{ include "nim-llm.sshDir" . }}/authorized_keys \
+                -y > {{ include "nim_llm.sshDir" . }}/rsa.pub \
+                && cp {{ include "nim_llm.sshDir" . }}/rsa.pub {{ include "nim_llm.sshDir" . }}/authorized_keys \
                 && echo -e "Host *\n    IdentityFile {{ ternary "/root/pk/private.key" "/opt/nim/llm/pk/private.key" (eq (int $.Values.podSecurityContext.runAsUser) 0) }}" \
                 {{- if eq (int .Values.podSecurityContext.runAsUser) 0 }}
                 chown root:root /var/run/sshd \
@@ -225,27 +225,27 @@ spec:
                 /usr/bin/ssh-keygen -f /ssh-confs/hostkey.rsa -N '' -t rsa && \
                 /usr/sbin/sshd -De -f /ssh-confs/.sshd_config -h /ssh-confs/hostkey.rsa
             ports:
-              {{- include "nim-llm.ports" $ | nindent 14 }}
+              {{- include "nim_llm.ports" $ | nindent 14 }}
             resources:
               {{- toYaml .Values.resources | nindent 14 }}
             volumeMounts:
-              {{- include "nim-llm.volumeMounts" $ | nindent 14 }}
+              {{- include "nim_llm.volumeMounts" $ | nindent 14 }}
               - name: ssh-confs
                 mountPath: /ssh-confs
               - name: ssh-dotfiles
-                mountPath: {{ include "nim-llm.sshDir" . }}
+                mountPath: {{ include "nim_llm.sshDir" . }}
               - name: ssh-pk
                 mountPath: {{ ternary "/root/pk" "/opt/nim/llm/pk" (eq (int .Values.podSecurityContext.runAsUser) 0) }}
             env:
               - name: VLLM_CONFIGURE_LOGGING
                 value: "1"
               - name: TLLM_LOG_LEVEL
-                value: {{ include "nim-llm.trtLLMLoggingLevel" . }}
+                value: {{ include "nim_llm.trtLLMLoggingLevel" . }}
               - name: VLLM_NVEXT_LOG_LEVEL
-                value: {{ include "nim-llm.vllmNVEXTLogLevel" . }}
+                value: {{ include "nim_llm.vllmNVEXTLogLevel" . }}
               - name: UVICORN_LOG_LEVEL
-                value: {{ include "nim-llm.uvicornLogLevel" . }}
-              {{- include "nim-llm.JSONLLoggingEnvVars" . | indent 14 }}
+                value: {{ include "nim_llm.uvicornLogLevel" . }}
+              {{- include "nim_llm.JSONLLoggingEnvVars" . | indent 14 }}
               - name: NIM_CACHE_PATH
                 value: {{ .Values.model.nimCache | quote }}
               - name: NGC_API_KEY
@@ -294,7 +294,7 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
         volumes:
-          {{- include "nim-llm.multinodeVolumes" . | nindent 10 }}
+          {{- include "nim_llm.multinodeVolumes" . | nindent 10 }}
           - name: ssh-confs
             emptyDir: {}
           - name: ssh-dotfiles
@@ -302,7 +302,7 @@ spec:
           - name: ssh-pk
             secret:
               defaultMode: 256
-              secretName: {{ include "nim-llm.fullname" . }}-ssh-pk
+              secretName: {{ include "nim_llm.fullname" . }}-ssh-pk
 {{- else }}
 {{ if .Values.multiNode.optimized.enabled }}
 {{- /*
@@ -315,7 +315,7 @@ kind: MPIJob
 metadata:
   name: {{ $.Release.Name }}-{{ toString $i }}
   labels:
-    {{- include "nim-llm.labels" $ | nindent 4 }}
+    {{- include "nim_llm.labels" $ | nindent 4 }}
 spec:
   runPolicy:
     cleanPodPolicy: None
@@ -331,7 +331,7 @@ spec:
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          serviceAccountName: {{ include "nim-llm.serviceAccountName" $ }}
+          serviceAccountName: {{ include "nim_llm.serviceAccountName" $ }}
           securityContext:
             {{- toYaml $.Values.podSecurityContext | nindent 12 }}
           {{- if $.Values.initContainers.extraInit }}
@@ -386,11 +386,11 @@ spec:
             - -x
             - {{ get . "name" }}
             {{- end }}
-            - {{ include "nim-llm.multiNodeExec" $ }}
+            - {{ include "nim_llm.multiNodeExec" $ }}
             image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
             name: nim
             volumeMounts:
-              {{- include "nim-llm.volumeMounts" $ | nindent 14 }}
+              {{- include "nim_llm.volumeMounts" $ | nindent 14 }}
             {{- if $.Values.multiNode.mpiJob.launcherResources }}
             resources:
               {{- toYaml $.Values.multiNode.mpiJob.launcherResources | nindent 14 }}
@@ -401,12 +401,12 @@ spec:
               - name: VLLM_CONFIGURE_LOGGING
                 value: "1"
               - name: TLLM_LOG_LEVEL
-                value: {{ include "nim-llm.trtLLMLoggingLevel" $ }}
+                value: {{ include "nim_llm.trtLLMLoggingLevel" $ }}
               - name: VLLM_NVEXT_LOG_LEVEL
-                value: {{ include "nim-llm.vllmNVEXTLogLevel" $ }}
+                value: {{ include "nim_llm.vllmNVEXTLogLevel" $ }}
               - name: UVICORN_LOG_LEVEL
-                value: {{ include "nim-llm.uvicornLogLevel" $ }}
-              {{- include "nim-llm.JSONLLoggingEnvVars" $ | indent 14 }}
+                value: {{ include "nim_llm.uvicornLogLevel" $ }}
+              {{- include "nim_llm.JSONLLoggingEnvVars" $ | indent 14 }}
               - name: NIM_CACHE_PATH
                 value: {{ $.Values.model.nimCache | quote }}
               - name: NGC_HOME
@@ -445,13 +445,13 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumes:
-            {{- include "nim-llm.multinodeVolumes" $ | nindent 10 }}
+            {{- include "nim_llm.multinodeVolumes" $ | nindent 10 }}
     Worker:
       replicas: {{ $.Values.multiNode.workers }}
       template:
         metadata:
           labels:
-            {{- include "nim-llm.selectorLabels" $ | nindent 12 }}
+            {{- include "nim_llm.selectorLabels" $ | nindent 12 }}
             {{- if $.Values.model.labels }}
             {{- toYaml $.Values.model.labels | nindent 12 }}
             {{- end }}
@@ -461,7 +461,7 @@ spec:
             {{- toYaml $.Values.multiNode.mpiJob.workerAnnotations | nindent 12 }}
             {{- end }}
         spec:
-          serviceAccountName: {{ include "nim-llm.serviceAccountName" $ }}
+          serviceAccountName: {{ include "nim_llm.serviceAccountName" $ }}
           securityContext:
             {{- toYaml $.Values.podSecurityContext | nindent 12 }}
           {{- with $.Values.imagePullSecrets }}
@@ -491,12 +491,12 @@ spec:
               - name: VLLM_CONFIGURE_LOGGING
                 value: "1"
               - name: TLLM_LOG_LEVEL
-                value: {{ include "nim-llm.trtLLMLoggingLevel" $ }}
+                value: {{ include "nim_llm.trtLLMLoggingLevel" $ }}
               - name: VLLM_NVEXT_LOG_LEVEL
-                value: {{ include "nim-llm.vllmNVEXTLogLevel" $ }}
+                value: {{ include "nim_llm.vllmNVEXTLogLevel" $ }}
               - name: UVICORN_LOG_LEVEL
-                value: {{ include "nim-llm.uvicornLogLevel" $ }}
-              {{- include "nim-llm.JSONLLoggingEnvVars" $ | indent 14 }}
+                value: {{ include "nim_llm.uvicornLogLevel" $ }}
+              {{- include "nim_llm.JSONLLoggingEnvVars" $ | indent 14 }}
               - name: NIM_CACHE_PATH
                 value: {{ $.Values.model.nimCache | quote }}
               - name: NGC_API_KEY
@@ -516,11 +516,11 @@ spec:
               {{- toYaml $.Values.env | nindent 14 }}
               {{- end }}
             ports:
-              {{- include "nim-llm.ports" $ | nindent 14 }}
+              {{- include "nim_llm.ports" $ | nindent 14 }}
             resources:
               {{- toYaml $.Values.resources | nindent 14 }}
             volumeMounts:
-              {{- include "nim-llm.volumeMounts" $ | nindent 14 }}
+              {{- include "nim_llm.volumeMounts" $ | nindent 14 }}
               - name: ssh-confs
                 mountPath: /ssh-confs
           terminationGracePeriodSeconds: 60
@@ -537,11 +537,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumes:
-            {{- include "nim-llm.multinodeVolumes" $ | nindent 10 }}
+            {{- include "nim_llm.multinodeVolumes" $ | nindent 10 }}
           - name: ssh-confs
             emptyDir: {}
   slotsPerWorker: {{ $.Values.multiNode.gpusPerNode }}
-  sshAuthMountPath: {{ include "nim-llm.sshDir" $ }}
+  sshAuthMountPath: {{ include "nim_llm.sshDir" $ }}
   launcherCreationPolicy: WaitForWorkersReady
 {{- end }}
 {{- else }}

@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "nim-llm.name" -}}
+{{- define "nim_llm.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "nim-llm.fullname" -}}
+{{- define "nim_llm.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "nim-llm.chart" -}}
+{{- define "nim_llm.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "nim-llm.labels" -}}
-helm.sh/chart: {{ include "nim-llm.chart" . }}
-{{ include "nim-llm.selectorLabels" . }}
+{{- define "nim_llm.labels" -}}
+helm.sh/chart: {{ include "nim_llm.chart" . }}
+{{ include "nim_llm.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,8 +45,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "nim-llm.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "nim-llm.name" . }}
+{{- define "nim_llm.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "nim_llm.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app: agent-morpheus
 component: nim-llm
@@ -55,9 +55,9 @@ component: nim-llm
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "nim-llm.serviceAccountName" -}}
+{{- define "nim_llm.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "nim-llm.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "nim_llm.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -66,7 +66,7 @@ Create the name of the service account to use
 {{/*
 For inline NGC key, create image pull secret
 */}}
-{{- define "nim-llm.generatedImagePullSecret" -}}
+{{- define "nim_llm.generatedImagePullSecret" -}}
 {{- if .Values.model.ngcAPIKey }}
 {{- printf "{\"auths\":{\"nvcr.io\":{\"username\":\"$oauthtoken\",\"password\":\"%s\"}}}" .Values.model.ngcAPIKey | b64enc }}
 {{- end }}
@@ -75,7 +75,7 @@ For inline NGC key, create image pull secret
 {{/*
 Generating logging variables for multi-node inference
 */}}
-{{- define "nim-llm.trtLLMLoggingLevel" -}}
+{{- define "nim_llm.trtLLMLoggingLevel" -}}
 {{- if eq .Values.model.logLevel "DEFAULT" -}}
 ERROR
 {{-  else if eq .Values.model.logLevel "CRITICAL" -}}
@@ -88,7 +88,7 @@ ERROR
 {{/*
 Generating logging variables for multi-node inference
 */}}
-{{- define "nim-llm.vllmNVEXTLogLevel" -}}
+{{- define "nim_llm.vllmNVEXTLogLevel" -}}
 {{- if eq .Values.model.logLevel "TRACE" -}}
 DEBUG
 {{-  else if eq .Values.model.logLevel "DEFAULT" -}}
@@ -101,7 +101,7 @@ INFO
 {{/*
 Generating logging variables for multi-node inference
 */}}
-{{- define "nim-llm.uvicornLogLevel" -}}
+{{- define "nim_llm.uvicornLogLevel" -}}
 {{- if eq .Values.model.logLevel "DEFAULT" -}}
 info
 {{- else -}}
@@ -112,7 +112,7 @@ info
 {{/*
 Environment variables based on JSONL logging value for multi-node inference
 */}}
-{{- define "nim-llm.JSONLLoggingEnvVars" -}}
+{{- define "nim_llm.JSONLLoggingEnvVars" -}}
 {{- if .Values.model.jsonLogging }}
 - name: VLLM_LOGGING_CONFIG_PATH
   value: "/etc/nim/config/python_jsonl_logging_config.json"
@@ -129,7 +129,7 @@ Environment variables based on JSONL logging value for multi-node inference
 {{/*
 Define probes for single and multi-node templates
 */}}
-{{- define "nim-llm.probes" -}}
+{{- define "nim_llm.probes" -}}
 {{- if .Values.livenessProbe.enabled }}
 {{- with .Values.livenessProbe }}
 livenessProbe:
@@ -180,7 +180,7 @@ startupProbe:
 {{/*
 Define the container ports for NIMs using either legacy triton or current backends
 */}}
-{{- define "nim-llm.ports" -}}
+{{- define "nim_llm.ports" -}}
 {{- if .Values.model.legacyCompat }}
 - containerPort: 8000
   name: http
@@ -210,7 +210,7 @@ Define the container ports for NIMs using either legacy triton or current backen
 {{/*
 Define volume mounts for every nim hosting definition
 */}}
-{{- define "nim-llm.volumeMounts" -}}
+{{- define "nim_llm.volumeMounts" -}}
 - name: model-store
   {{- if .Values.model.legacyCompat }}
   mountPath: {{ .Values.model.nimCache }}
@@ -233,7 +233,7 @@ Define volume mounts for every nim hosting definition
 {{/*
 Volume set for multi-node options
 */}}
-{{- define "nim-llm.multinodeVolumes" -}}
+{{- define "nim_llm.multinodeVolumes" -}}
 - name: dshm
   emptyDir:
     medium: Memory
@@ -244,7 +244,7 @@ Volume set for multi-node options
 - name: model-store
   {{- if $.Values.persistence.enabled }}
   persistentVolumeClaim:
-    claimName:  {{ $.Values.persistence.existingClaim | default (include "nim-llm.fullname" $) }}
+    claimName:  {{ $.Values.persistence.existingClaim | default (include "nim_llm.fullname" $) }}
   {{- else if $.Values.hostPath.enabled }}
   hostPath:
     path: {{ $.Values.hostPath.path }}
@@ -268,21 +268,21 @@ Volume set for multi-node options
 {{/*
 Max replicas to prepare for in certain cases
 */}}
-{{- define "nim-llm.totalMaxReplicas" -}}
+{{- define "nim_llm.totalMaxReplicas" -}}
 {{ ternary .Values.autoscaling.maxReplicas .Values.replicaCount .Values.autoscaling.enabled }}
 {{- end }}
 
 {{/*
 The .ssh mount dir for multiNode
 */}}
-{{- define "nim-llm.sshDir" -}}
+{{- define "nim_llm.sshDir" -}}
 {{ ternary "/root/.ssh" "/opt/nim/llm/.ssh" (eq (int $.Values.podSecurityContext.runAsUser) 0) }}
 {{- end }}
 
 {{/*
 Executable for multinode deployments -- if using a container 1.1.2 or less, script doesn't exist
 */}}
-{{- define "nim-llm.multiNodeExec" -}}
+{{- define "nim_llm.multiNodeExec" -}}
 {{- if regexMatch "^\\d+\\.\\d+\\.\\d+" ( .Values.image.tag | default .Chart.AppVersion ) -}}
 {{- $nimver := regexReplaceAll "^(\\d+\\.\\d+\\.\\d+).*" ( .Values.image.tag | default .Chart.AppVersion ) "${1}" -}}
 {{- if eq (semver $nimver | (semver "1.1.2").Compare) -1 -}}

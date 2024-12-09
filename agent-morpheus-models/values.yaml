@@ -9,6 +9,9 @@ global:
   tolerationOperator: &toleration-op Exists
   tolerationEffect: &toleration-effect NoSchedule
 
+openshift:
+  createSecurityContextConstraint: true
+
 nim-embed:
   tolerations:
     - key: *toleration-key
@@ -21,7 +24,8 @@ nim-embed:
   fullnameOverride: nim-embed
 
 
-nim-llm:
+nim_llm:
+  enabled: false
   serviceAccount:
     name: *sa-name
   model:
@@ -30,9 +34,8 @@ nim-llm:
     - key: *toleration-key
       operator: *toleration-op
       effect: *toleration-effect
+  fullnameOverride: nim-llm
 
-nim_llm:
-  enabled: false
 
 nim_embed:
   enabled: true

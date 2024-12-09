@@ -1,5 +1,5 @@
 apiVersion: v2
-name: nim-llm
+name: nim_llm
 description: A Helm chart for NVIDIA NIM for LLMs
 type: application
 kubeVersion: ">=v1.23.0-0"

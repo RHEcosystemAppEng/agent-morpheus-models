@@ -1,12 +1,12 @@
 dependencies:
-- name: nim-llm
+- name: nim_llm
   repository: ""
   version: 1.1.2
-- name: llama3-1-70b-instruct-4bit
+- name: llama3_1_70b_instruct_4bit
   repository: ""
   version: 0.1.0
 - name: nim-embed
   repository: ""
   version: 0.1.0
-digest: sha256:d66289d111387f6212fe2e751e15a5c921506d4c4552a1fe8a8514e73da8895c
-generated: "2024-12-08T12:18:13.619470981+02:00"
+digest: sha256:c1d1bddaf305b8dec52a343b7f30343057f38c478cec3653e76318b5c961e070
+generated: "2024-12-09T09:45:43.002894675+02:00"

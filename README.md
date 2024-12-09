@@ -18,12 +18,15 @@ export NGC_API_KEY=your_api_key_goes_here
 
 3. Replace placeholder password with your real API Key
 ```shell
-sed -E 's/ \&ngc-api-key changeme/ \&ngc-api-key '$NGC_API_KEY'/' values.yaml  > agent-morpheus-models/yourenv_values.yaml
+sed -E 's/ \&ngc-api-key changeme/ \&ngc-api-key '$NGC_API_KEY'/' gent-morpheus-models/:values.yaml  > agent-morpheus-models/yourenv_values.yaml
 ```
 
-4. Deploy the chart
+4. Deploy the chart with one of the two possible combinations:
 ```shell
+# Deploy with LLM llama3.1-70b-instruct-4bit
  helm install agent-morpheus-models agent-morpheus-models/ -f agent-morpheus-models/yourenv_values.yaml
+# Or Deploy with LLM meta/llama3.1-8b-instruct ( 16bit quantization)
+ helm install --set llama3_1_70b_instruct_4bit.enabled=false --set nim_llm.enabled=true  agent-morpheus-models agent-morpheus-models/ -f agent-morpheus-models/yourenv_values.yaml
 ```
 Output:
 ```shell

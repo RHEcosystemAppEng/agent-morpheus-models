@@ -5,7 +5,7 @@
 
 {{- define "agent-morpheus-models.logic_check" -}}
 {{- if and .Values.llama3_1_70b_instruct_4bit.enabled .Values.nim_llm.enabled }}
-  hello: {{- required "Only one of models should be deployed!, either llama3_1_70b_instruct_4bit or nim-llm 8b, but not both!" .Values.whatever -}}
+  hello: {{- required "Only one of models should be deployed!, either llama3_1_70b_instruct_4bit or nim_llm 8b, but not both!" .Values.whatever -}}
 {{- end }}
 {{- end }}
 
@@ -46,6 +46,8 @@ helm.sh/chart: {{ include "agent-morpheus-models.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app: agent-morpheus
+component: all-models
 {{- end }}
 
 {{/*
