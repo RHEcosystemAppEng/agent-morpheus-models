@@ -9,7 +9,7 @@ following LLM:
 ## Deploying the chart
 1. Create target namespace to install on it all models.
 ```shell
-oc new-project YOUR_PROJECT_NAME
+oc new-project agent-morpheus-models
 ```
 2. Type in your NGC_API_KEY ( get one [here](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key))
 ```shell
