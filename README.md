@@ -48,13 +48,13 @@ TEST SUITE: None
 NOTES:
 Send a prompt to the model to test it works:
 oc wait --for=condition=ready pod -l component=llama3.1-70b-instruct  --timeout 1000s
-curl -X POST -H "Content-Type: application/json" http://llama3-1-70b-instruct-4bit-test-models.apps.ai-dev03.kni.syseng.devcluster.openshift.com/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
+curl -X POST -H "Content-Type: application/json" http://llama3-1-70b-instruct-4bit-agent-morpheus-models.apps.ai-dev03.kni.syseng.devcluster.openshift.com/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
 ```
 
 6. Wait for LLM pod to be ready, and then send an example request to the LLM, in order to get output
 ```shell
 oc wait --for=condition=ready pod -l component=llama3.1-70b-instruct  --timeout 1000s
-curl -X POST -H "Content-Type: application/json" http://llama3-1-70b-instruct-4bit-test-models.apps.ai-dev03.kni.syseng.devcluster.openshift.com/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
+curl -X POST -H "Content-Type: application/json" http://llama3-1-70b-instruct-4bit-agent-morpheus-models.apps.ai-dev03.kni.syseng.devcluster.openshift.com/v1/chat/completions -d @$(git rev-parse --show-toplevel)/agent-morpheus-models/files/70b-4bit-input-example.json | jq .
 ```
 
 7. Whenever finishing with models , and wants to free up resources,  you can delete the chart
