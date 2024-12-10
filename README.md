@@ -18,7 +18,7 @@ export NGC_API_KEY=your_api_key_goes_here
 
 3. Replace placeholder password with your real API Key
 ```shell
-sed -E 's/ \&ngc-api-key changeme/ \&ngc-api-key '$NGC_API_KEY'/' gent-morpheus-models/:values.yaml  > agent-morpheus-models/yourenv_values.yaml
+sed -E 's/ \&ngc-api-key changeme/ \&ngc-api-key '$NGC_API_KEY'/' agent-morpheus-models/values.yaml  > agent-morpheus-models/yourenv_values.yaml
 ```
 
 4. Deploying both LLMs together is not possible, when trying doing so, you'll get an error from  the chart installation:
