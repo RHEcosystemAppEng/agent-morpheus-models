@@ -115,7 +115,7 @@ podSecurityContext:
   fsGroup: 1000
 
 ## @param replicaCount Specify static replica count for deployment.
-replicaCount: 1
+replicaCount: 2
 
 ## @extra resources [object] Specify resources limits and requests for the running service. 
 ## @param resources.limits.nvidia.com/gpu Specify number of GPUs to present to the running service.

@@ -5,6 +5,9 @@ metadata:
   labels:
 {{- include "llama3_1_70b_instruct_4bit.labels" . | nindent 4 }}
   name: {{ include "llama3_1_70b_instruct_4bit.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+
 spec:
   port:
     targetPort: {{ .Values.service.port }}
