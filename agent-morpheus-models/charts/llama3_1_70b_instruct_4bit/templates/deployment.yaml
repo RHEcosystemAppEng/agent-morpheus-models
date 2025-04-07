@@ -35,7 +35,15 @@ spec:
         - name: {{ .Chart.Name | replace "_" "-" }}
           workingDir: /vllm-workspace
           command: [ "python3" , "-m" , "vllm.entrypoints.openai.api_server" ]
-          args: [ "--model", "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4","--tensor-parallel-size", "2", "--max-model-len", "8192", "--max_num_seqs", "128" ]
+          args:
+          - "--model"
+          - "{{ .Values.model.name }}"
+          - "--tensor-parallel-size"
+          - "{{ .Values.vllm.tensor_parallel_size }}"
+          - "--max-model-len"
+          - "{{ .Values.vllm.max_model_len }}"
+          - "--max-num-seqs"
+          - "{{ .Values.vllm.max_num_seqs }}"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
