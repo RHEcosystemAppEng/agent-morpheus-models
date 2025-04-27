@@ -8,7 +8,7 @@ image:
   repository: docker.io/vllm/vllm-openai
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "v0.8.4"
 
 model:
   name: hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
