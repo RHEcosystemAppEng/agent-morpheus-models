@@ -39,6 +39,9 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+openshift:
+  createRoute: true
+
 service:
   type: ClusterIP
   port: 8000

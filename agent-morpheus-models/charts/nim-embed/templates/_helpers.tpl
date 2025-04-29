@@ -35,7 +35,6 @@ Common labels
 */}}
 {{- define "nim-embed.labels" -}}
 helm.sh/chart: {{ include "nim-embed.chart" . }}
-{{ include "nim-embed.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
